@@ -1,0 +1,23 @@
+<main id="home" role="main">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Elige tu cuento</h1>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-6 col-sm-2 mt-2" ng-repeat="(i, tale) in tales">
+                <a href="#!tale/{{i}}">
+                    <div class="card">
+                        <img src="images/tale1.png" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            {{i + 1}}
+                            <p class="card-text">{{tale.title}}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <p class="mt-5"><a class="btn btn-lg btn-primary btn-block" href="#!tale/1">Tale</a></p>
+    </div>
+</main>

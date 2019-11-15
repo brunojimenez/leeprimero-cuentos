@@ -1,0 +1,62 @@
+<main id="photo" role="main">
+    <div class="container-fluid">
+
+        <div class="row mt-3">
+            <div class="col-md-6 col-xs-12 text-center">
+                <div class="camera">
+                    <video id="video">Video stream not available.</video>    
+                </div>
+            </div>
+            <div class="col-md-6 col-xs-12 text-center">
+                <div class="camera">
+                    <canvas id="canvas">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col text-center">
+                <a class="btn btn-warning btn-circle btn-lg" href="#/!"><i class="glyphicon glyphicon-arrow-left"></i></a>
+                <br>
+                Volver
+            </div>
+            <div class="col text-center">
+                <button type="button" class="btn btn-success btn-circle btn-lg" ng-click="takepicture()"><i class="glyphicon glyphicon-camera"></i></button>
+                <br>
+                Tomar foto
+            </div>
+            <div class="col text-center">
+                <button type="button" class="btn btn-primary btn-circle btn-lg"><i class="glyphicon glyphicon-print"></i></button>
+                <br>Imprimir
+            </div>
+            <div class="col text-center">
+                <button type="button" class="btn btn-primary btn-circle btn-lg"><i class="glyphicon glyphicon-envelope"></i></button>
+                <br>Enviar por correo
+            </div>
+            <div class="col text-center">
+                <button type="button" class="btn btn-danger btn-circle btn-lg" ng-click="clearphoto()"><i class="glyphicon glyphicon-trash"></i></button>
+                <br>Borrar
+            </div>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col ">
+                <div class="camera">
+                    <form>
+                        <div class="form-group">
+                            <input type="email" class="form-control form-control-lg" placeholder="Ingrese su email">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+      
+        <!--
+        div class="output">
+            <img id="photo" alt="The screen capture will appear in this box."> 
+        </div>
+        -->
+
+    </div>
+</main>

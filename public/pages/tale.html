@@ -1,0 +1,31 @@
+<main id="tale" role="main">
+    <div class="container-fluid">
+        
+        <div class="row">
+            <div class="col text-center">
+                <h1>Léelo en voz alta</h1>
+                <h3>{{tale.title}}</h3>
+                <h5>({{tale.author}})</h5>
+                <p class="mt-5">
+                    {{tale.text}}
+                </p>
+                <p>
+                    {{tale.footer}}
+                </p>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col text-center">
+                <a class="btn btn-warning btn-circle btn-lg" href="#/!"><i class="glyphicon glyphicon-arrow-left"></i></a>
+                <br>
+                Volver
+            </div>
+            <div class="col text-center">
+                <a class="btn btn-success btn-circle btn-lg" href="#!photo/{{id}}"><i class="glyphicon glyphicon-camera"></i></a>
+                <br>
+                Tomar foto
+            </div>
+        </div>
+    </div>
+</main>
