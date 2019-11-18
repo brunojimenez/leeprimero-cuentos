@@ -1,5 +1,5 @@
 @media (max-width: 576px) {
-           
+
 }
 
 @media (max-width: 768px) {
@@ -16,28 +16,50 @@
     
 }
 
+body {
+  background-color: #fcfdad;
+}
+
+.tale_title {
+  color: #047FEF;
+  font-size: 2.5em;
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-color: #3BFCD5;
+}
+
+.tale_body {
+  font-size: 1.5em;
+}
+
+.tale_foot{
+  font-size: 1.5em;
+}
+
 .btn-circle {
-    width: 30px;
-    height: 30px;
-    text-align: center;
-    padding: 6px 0;
-    font-size: 12px;
-    line-height: 1.428571429;
-    border-radius: 15px;
-  }
-  .btn-circle.btn-lg {
-    width: 50px;
-    height: 50px;
-    padding: 10px 16px;
-    font-size: 18px;
-    line-height: 1.33;
-    border-radius: 25px;
-  }
-  .btn-circle.btn-xl {
-    width: 70px;
-    height: 70px;
-    padding: 10px 16px;
-    font-size: 24px;
-    line-height: 1.33;
-    border-radius: 35px;
-  }
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
+
+.btn-circle.btn-lg {
+  width: 50px;
+  height: 50px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 25px;
+}
+
+.btn-circle.btn-xl {
+  width: 70px;
+  height: 70px;
+  padding: 10px 16px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 35px;
+}

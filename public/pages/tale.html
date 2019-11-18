@@ -1,15 +1,18 @@
 <main id="tale" role="main">
-    <div class="container-fluid">
+    <div class="container">
         
         <div class="row">
             <div class="col text-center">
-                <h1>Léelo en voz alta</h1>
-                <h3>{{tale.title}}</h3>
-                <h5>({{tale.author}})</h5>
-                <p class="mt-5">
+                <h1 class="tale_title">Léelo en voz alta</h1>
+                <h1>
+                    <strong>{{tale.title}}</strong>
+                    <br>
+                    <small>({{tale.author}})</small>
+                </h1>
+                <p class="tale_body mt-5 mx-5">
                     {{tale.text}}
                 </p>
-                <p>
+                <p class="tale_foot mt-5 mx-5">
                     {{tale.footer}}
                 </p>
             </div>
