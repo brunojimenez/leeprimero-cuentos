@@ -7,12 +7,12 @@
                 <h1>
                     <strong>{{tale.title}}</strong>
                     <br>
-                    <small>({{tale.author}})</small>
+                    <small ng-show="tale.author">({{tale.author}})</small>
                 </h1>
-                <p class="tale_body mt-5 mx-5">
+                <p class="tale_body mt-5 mx-5" ng-show="tale.text">
                     {{tale.text}}
                 </p>
-                <p class="tale_foot mt-5 mx-5">
+                <p class="tale_foot mt-5 mx-5" ng-show="tale.footer">
                     {{tale.footer}}
                 </p>
             </div>
@@ -25,7 +25,7 @@
                 Volver
             </div>
             <div class="col text-center">
-                <a class="btn btn-success btn-circle btn-lg" href="#!photo/{{id}}"><i class="glyphicon glyphicon-camera"></i></a>
+                <a class="btn btn-success btn-circle btn-lg" href="#!photo/{{tale.id}}"><i class="glyphicon glyphicon-camera"></i></a>
                 <br>
                 Tomar foto
             </div>
