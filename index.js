@@ -5,6 +5,6 @@ app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
-app.use(express.static('public'));
+app.use(express.static('docs'));
 
 app.listen(3000);
