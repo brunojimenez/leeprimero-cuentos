@@ -13,6 +13,10 @@ app.config(function($routeProvider) {
         .when("/photo/:id", {
             templateUrl : "pages/photo.html",
             controller: "photoCtrl"
+        })
+        .when("/sharephoto", {
+            templateUrl : "pages/sharephoto.html",
+            controller: "sharephotoCtrl"
         });
 
 });
@@ -27,13 +31,22 @@ app.controller('homeCtrl', function($scope, $rootScope){
     }
     $scope.init();
 
+    $scope.$on("$destroy", function() {
+        console.log("Destroy homeCtrl");
+    });
+
 });
 
-app.controller('taleCtrl', function($scope, $rootScope, $routeParams){
+app.controller('taleCtrl', function($scope, $rootScope, $routeParams, $location){
     console.log("taleCtrl");
 
     $scope.id = $routeParams.id;
     $scope.tales = $rootScope.tales;
+
+    $scope.goto = function(to) {
+        console.log("goto: " +  to);
+        $location.path(to);
+    }
     
     $scope.init = function() {
         for (const i in $scope.tales) {
@@ -46,10 +59,21 @@ app.controller('taleCtrl', function($scope, $rootScope, $routeParams){
         // $scope.tale = $scope.tales[$scope.id];
     }
     $scope.init();
+
+    $scope.$on("$destroy", function() {
+        console.log("Destroy taleCtrl");
+    });
 });
 
-app.controller('photoCtrl', function($scope){
+app.controller('photoCtrl', function($scope, $routeParams, $location, $interval){
     console.log("photoCtrl");
+    
+    $scope.id = $routeParams.id;
+
+    $scope.goto = function(to) {
+        console.log("goto: " +  to);
+        $location.path(to);
+    }
 
     $scope.photodata = "";
 
@@ -91,20 +115,30 @@ app.controller('photoCtrl', function($scope){
     $scope.takepicture = function() {
         console.log("takepicture");
 
-        var context = canvas.getContext('2d');
-        if (width && height) {
-            canvas.width = width;
-            canvas.height = height;
-            context.drawImage(video, 0, 0, width, height);
+        $scope.countDown = 3;
+        $scope.interval = $interval(function(){
+            console.log("countDown : ", $scope.countDown--)
+            if ($scope.countDown == 0) {
+                console.log("Stop!");
 
-            var data = canvas.toDataURL('image/png');
+                var context = canvas.getContext('2d');
+                if (width && height) {
+                    canvas.width = width;
+                    canvas.height = height;
+                    context.drawImage(video, 0, 0, width, height);
 
-            console.log("takepicture data: ", data);
-            photo.setAttribute('src', data);
-            $scope.photodata = data;
-        } else {
-            $scope.clearphoto();
-        }
+                    var data = canvas.toDataURL('image/png');
+
+                    console.log("takepicture data: ", data);
+                    photo.setAttribute('src', data);
+                    $scope.photodata = data;
+                } else {
+                    $scope.clearphoto();
+                }
+
+                $interval.cancel($scope.interval);
+            }
+        },1000,0);
     }
 
     $scope.init = function() {
@@ -142,10 +176,29 @@ app.controller('photoCtrl', function($scope){
             }
         }, false);
 
+        // $scope.clearphoto();
     };
     $scope.init();
 
-    $scope.clearphoto();
+    $scope.$on("$destroy", function() {
+        console.log("Destroy photoCtrl");
+        try {
+            video.srcObject.getTracks().forEach(function(track) {
+                track.stop();
+            });
+        } catch (ex) {
+            console.log(ex);
+        }
+    });
+});
+
+app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams){
+    console.log("sharephotoCtrl");
+
+    $scope.init = function() {
+
+    }
+    $scope.init();
 });
 
 

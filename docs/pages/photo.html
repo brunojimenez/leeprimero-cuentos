@@ -21,41 +21,18 @@
         
         <div class="row mt-5">
             <div class="col text-center">
-                <a class="btn btn-warning btn-circle btn-lg" href="#/!"><i class="glyphicon glyphicon-arrow-left"></i></a>
-                <br>
-                Volver
+                <button class="btn btn-warning btn-circle btn-xl mx-3" ng-click="goto('/tale/' + id)"><i class="fas fa-angle-left"></i></a>
+                <button class="btn btn-success btn-circle btn-xl mx-3" ng-click="takepicture()"><i class="fas fa-camera"></i></a>
             </div>
-            <div class="col text-center">
-                <button type="button" class="btn btn-success btn-circle btn-lg" ng-click="takepicture()"><i class="glyphicon glyphicon-camera"></i></button>
-                <br>
-                Tomar foto
-            </div>
-            <div class="col text-center">
-                <button type="button" class="btn btn-primary btn-circle btn-lg"><i class="glyphicon glyphicon-print"></i></button>
-                <br>Imprimir
-            </div>
-            <div class="col text-center">
-                <button type="button" class="btn btn-primary btn-circle btn-lg"><i class="glyphicon glyphicon-envelope"></i></button>
-                <br>Enviar por correo
-            </div>
-            <div class="col text-center">
-                <button type="button" class="btn btn-danger btn-circle btn-lg" ng-click="clearphoto()"><i class="glyphicon glyphicon-trash"></i></button>
-                <br>Borrar
+        </div>
+
+        <div class="row mt-5">
+            <div class="col text-center" ng-show="countDown" >
+                <h1>{{countDown}}</h1>
             </div>
         </div>
         
-        <div class="row mt-5">
-            <div class="col ">
-                <div class="camera">
-                    <form>
-                        <div class="form-group">
-                            <input type="email" class="form-control form-control-lg" placeholder="Ingrese su email">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-      
+             
         <!--
         div class="output">
             <img id="photo" alt="The screen capture will appear in this box."> 
