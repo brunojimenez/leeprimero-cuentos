@@ -127,11 +127,18 @@ app.controller('photoCtrl', function($scope, $routeParams, $location, $interval)
                     canvas.height = height;
                     context.drawImage(video, 0, 0, width, height);
 
-                    var data = canvas.toDataURL('image/png');
+                    var imageObj2 = new Image();
+                    imageObj2.src = "../images/gato.png";
+                    imageObj2.onload = function() {
+                        context.drawImage(imageObj2, 0, 0, 300, 300);
 
-                    console.log("takepicture data: ", data);
-                    photo.setAttribute('src', data);
-                    $scope.photodata = data;
+                        // common
+                        var data = canvas.toDataURL('image/png');
+
+                        console.log("takepicture data: ", data);
+                        photo.setAttribute('src', data);
+                        $scope.photodata = data;
+                    }
                 } else {
                     $scope.clearphoto();
                 }
@@ -190,6 +197,17 @@ app.controller('photoCtrl', function($scope, $routeParams, $location, $interval)
             console.log(ex);
         }
     });
+
+
+    $scope.download = function() {
+        const downloadLink = document.createElement("a");
+        const fileName = "foto.png";
+
+        downloadLink.href = $scope.photodata;
+        downloadLink.download = fileName;
+        downloadLink.click();
+    }
+    
 });
 
 app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams){
