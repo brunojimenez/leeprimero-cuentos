@@ -128,7 +128,7 @@ app.controller('photoCtrl', function($scope, $routeParams, $location, $interval)
                     context.drawImage(video, 0, 0, width, height);
 
                     var imageObj2 = new Image();
-                    imageObj2.src = "../images/gato.png";
+                    imageObj2.src = "images/gato.png";
                     imageObj2.onload = function() {
                         context.drawImage(imageObj2, 0, 0, 300, 300);
 
