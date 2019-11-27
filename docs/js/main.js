@@ -176,8 +176,9 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
         } else {
             imageObj1.setAttribute('src', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII');
         }
-
+       
         imageObj1.onload = function() {
+            console.log("[sharephotoCtrl][init] imageObj1.onload");
             $scope.canvas.width = imageObj1.width;
             $scope.canvas.height = imageObj1.height;
             context.save();
@@ -190,7 +191,10 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
         var imageObj2 = new Image();
         imageObj2.src = $rootScope.getImagePath($scope.id);
         imageObj2.onload = function() {
+            console.log("[sharephotoCtrl][init] imageObj2.onload");
+            context.save();
             context.drawImage(imageObj2, 0, 0, imageObj1.width, imageObj1.height);      
+            context.restore();
         }
     }
     $scope.init();
