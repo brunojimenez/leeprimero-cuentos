@@ -92,9 +92,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
         photo = document.getElementById('photo');
 
         navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: { exact: "user" }
-                },
+                video: true, // { facingMode: { exact: "user" } },
                 audio: false
             })
             .then(function(stream) {
@@ -176,6 +174,15 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
         } else {
             imageObj1.setAttribute('src', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII');
         }
+        
+        var imageObj2 = new Image();
+        imageObj2.src = $rootScope.getImagePath($scope.id);
+        imageObj2.onload = function() {
+            console.log("[sharephotoCtrl][init] imageObj2.onload");
+            context.save();
+            context.drawImage(imageObj2, 0, 0, imageObj1.width, imageObj1.height);
+            context.restore();
+        }
        
         imageObj1.onload = function() {
             console.log("[sharephotoCtrl][init] imageObj1.onload");
@@ -188,14 +195,6 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
             context.restore();
         }
 
-        var imageObj2 = new Image();
-        imageObj2.src = $rootScope.getImagePath($scope.id);
-        imageObj2.onload = function() {
-            console.log("[sharephotoCtrl][init] imageObj2.onload");
-            context.save();
-            context.drawImage(imageObj2, 0, 0, imageObj1.width, imageObj1.height);      
-            context.restore();
-        }
     }
     $scope.init();
 
