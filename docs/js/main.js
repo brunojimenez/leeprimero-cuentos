@@ -23,7 +23,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
     // The width and height of the captured photo. We will set the
     // width to the value defined here, but the height will be
     // calculated based on the aspect ratio of the input stream.
-    var width = 320; // We will scale the photo width to this
+    var width = 0; // We will scale the photo width to this
     var height = 0; // This will be computed based on the input stream
 
     // |streaming| indicates whether or not we're currently streaming
@@ -80,8 +80,10 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
 
         if ($rootScope.mobileCheck()) {
             console.log("[homeCtrl] Mobile");
+            width = 320;
         } else {
             console.log("[homeCtrl] Desktop");
+            width = 720;
         }
 
         
@@ -220,17 +222,23 @@ app.run(function($rootScope) {
     $rootScope.photoList = [
         {
             "id" : "001",
-            "path" : "images/001 Cuento - Mono photo web 20.png"
+            "mobile" : "images/001 Cuento - Mono photo web 20.png",
+            "desktop" : "images/001 Cuento - Mono photo web 30.png"
         },
         {
             "id" : "002",
-            "path" : "images/002 Cuento - Pulpo photo web0.png"
+            "mobile" : "images/002 Cuento - Pulpo photo web0.png",
+            "desktop" : "images/002 Cuento - Pulpo photo web0.png"
         }
     ];
 
     $rootScope.getImagePath = function(id) {
         var photo = $rootScope.photoList.find(element => element.id.localeCompare(id) == 0);
-        return photo.path;
+        if ($rootScope.mobileCheck()) {
+            return photo.mobile;
+        } else {
+            return photo.desktop;
+        }
     }
 
     $rootScope.mobileCheck = function() {
