@@ -18,7 +18,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
     
     $scope.id = $routeParams.id;
 
-    $scope.whatermark = $rootScope.getImagePath($scope.id);
+    $scope.photo = $rootScope.getImagePath($scope.id);
 
     // The width and height of the captured photo. We will set the
     // width to the value defined here, but the height will be
@@ -31,6 +31,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
     var streaming = false;
     var video = null;
     var canvas = null;
+    var photo = null;
 
     $scope.goto = function(to) {
         console.log("[homeCtrl] goto: " +  to);
@@ -61,7 +62,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
 
     $scope.doCountDown = function() {
         console.log("[homeCtrl] countDown!");
-        $scope.countDown = 2 ; // Seconds to coundown
+        $scope.countDown = 3 ; // Seconds to coundown
         $scope.interval = $interval(async function(){
             console.log("[homeCtrl] countDown: ", $scope.countDown--);
             if ($scope.countDown == 0) {
@@ -79,6 +80,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
         
         video = document.getElementById('video');
         canvas = document.getElementById('canvas');
+        photo = document.getElementById('photo');
 
         navigator.mediaDevices.getUserMedia({
                 video: {
@@ -87,6 +89,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
                 audio: false
             })
             .then(function(stream) {
+                console.log("[homeCtrl][init] getUserMedia then");
                 video.srcObject = stream;
                 video.play();
             })
@@ -108,7 +111,15 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
 
                 video.setAttribute('width', width);
                 video.setAttribute('height', height);
-                
+
+                //photo.style.width = width;
+                //photo.style.height = height;
+                photo.setAttribute('width', width);
+                photo.setAttribute('height', height);
+                photo.style.visibility = 'visible';
+
+                video.style.width = document.width + 'px';
+                video.style.height = document.height + 'px';
                 video.setAttribute('autoplay', '');
                 video.setAttribute('muted', '');
                 video.setAttribute('playsinline', '');

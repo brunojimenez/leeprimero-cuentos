@@ -1,14 +1,17 @@
-<main id="photo" role="main">
+<main role="main">
     <div class="container">
         <div class="row">
             <div class="col text-center">
-                <h1 class="tale_title">Tómate una foto</h1>
+                <h2 class="tale_title">Tómate una foto</h2>
                 </div>
         </div>
         <div class="row mt-5">
             <div class="col text-center">
                 <button class="btn btn-warning btn-circle btn-xl mx-3" ng-click="goto('/photo/001')"><i class="fas fa-angle-left"></i></a>
-                <button class="btn btn-success btn-circle btn-xl mx-3" ng-click="doCountDown()"><i class="fas fa-camera"></i></a>
+                <button class="btn btn-success btn-circle btn-xl mx-3" ng-click="doCountDown()">
+                    <i class="fas fa-camera" ng-show="!countDown"></i>
+                    <span ng-show="countDown"> {{countDown}} </span>
+                </a>
             </div>
         </div>
         <div class="row mt-3">
@@ -16,14 +19,7 @@
                 <div class="camera">
                     <video id="video">Video stream not available.</video> 
                 </div>
-                <img id="whatermark" ng-src="{{whatermark}}"/>
-            </div>
-        </div>
-         <div class="row mt-5">
-            <div class="col text-center" ng-show="countDown" >
-                <h1>{{countDown}}</h1>
-            </div>
-            <div class="col">
+                <img id="photo" ng-src="{{photo}}" />
                 <canvas id="canvas" style="display: none;"></canvas>
             </div>
         </div>
@@ -31,20 +27,31 @@
 </main>
 
 <style>
-    #whatermark {
-        width: 320px;
-        height: auto ;
-        position: relative;
-        /*transform: translate(-5%, -81%) scale(0.95); */
-        /*  transform: translateX(-10%);*/
+    #camera {
         margin: 0;
         padding: 0;
     }
+    #photo {
+        margin: 0;
+        padding: 0;
+        transform: translate(0%, -102%);
+        visibility: hidden;
+    }
+    /*
+    #photo {
+        width: 320px;
+        height: auto ;
+        position: relative; 
+        transform: translate(-5%, -81%) scale(0.95);
+        transform: translateX(-10%);
+        
+    }
+    */
     video {
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
     }
     canvas {
-        /*display:none;*/
+        display:none;
     }
 </style>
