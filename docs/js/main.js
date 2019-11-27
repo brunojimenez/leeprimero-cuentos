@@ -76,7 +76,14 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
     }
 
     $scope.init = function() {
-        console.log("init");
+        console.log("[homeCtrl] init");
+
+        if ($rootScope.mobileCheck()) {
+            console.log("[homeCtrl] Mobile");
+        } else {
+            console.log("[homeCtrl] Desktop");
+        }
+
         
         video = document.getElementById('video');
         canvas = document.getElementById('canvas');
