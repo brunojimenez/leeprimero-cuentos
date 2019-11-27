@@ -82,7 +82,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
 
         navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode: 'user'
+                    facingMode: { exact: "user" }
                 },
                 audio: false
             })
