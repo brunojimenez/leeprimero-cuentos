@@ -2,11 +2,11 @@ var app = angular.module('app', ["ngRoute"]);
 
 app.config(function($routeProvider) {
     $routeProvider
-        .when("/", {
+        .when("/photo/:id", {
             templateUrl : "pages/home.html", 
             controller: "homeCtrl"
         })
-        .when("/sharephoto", {
+        .when("/sharephoto/:id", {
             templateUrl : "pages/sharephoto.html",
             controller: "sharephotoCtrl"
         });
@@ -44,9 +44,6 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
         console.log("[homeCtrl] takepicture");
         var context = canvas.getContext('2d');
 
-        // Flip horizontal
-        
-
         if (width && height) {
             canvas.width = width;
             canvas.height = height;
@@ -54,7 +51,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
             $rootScope.width = width;
             $rootScope.height = height;
 
-            console.log("[homeCtrl] drawImage1");
+            console.log("[homeCtrl] drawImage");
             await context.drawImage(video, 0, 0, width, height);
             $rootScope.photo = await canvas.toDataURL();       
         }
@@ -69,7 +66,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
                 console.log("[homeCtrl] countDown stop!");
                 await $scope.takepicture();
                 await $interval.cancel($scope.interval);
-                await $location.path('/sharephoto');
+                await $location.path('/sharephoto/' + $scope.id);
                 await $scope.$apply();
             }
         },1000,0);
@@ -82,7 +79,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
         canvas = document.getElementById('canvas');
 
         navigator.mediaDevices.getUserMedia({
-                video: true , // { width: { min: 320 }, }  // { width: 1280, height: 720 }
+                video: true,
                 audio: false
             })
             .then(function(stream) {
@@ -95,14 +92,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
         
         video.addEventListener('canplay', function(ev) {
             if (!streaming) {
-                console.log("[homeCtrl][addEventListener canplay] !streaming");
-
-                console.log("[homeCtrl][addEventListener canplay] video.videoWidth : ", video.videoWidth);
-                console.log("[homeCtrl][addEventListener canplay] video.videoHeight : ", video.videoHeight);
-
                 height = video.videoHeight / (video.videoWidth / width);
-
-                console.log("[homeCtrl][addEventListener canplay] height : ", height);
 
                 // Firefox currently has a bug where the height can't be read from
                 // the video, so we will make assumptions if this happens.
@@ -136,12 +126,15 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
 app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $location){
     console.log("[sharephotoCtrl] start");
 
+    $scope.id = $routeParams.id;
+
     $scope.canvas = null; 
 
     $scope.init = function() {
-        console.log("[sharephotoCtrl] init");
+        console.log("[sharephotoCtrl][init]");
+
         $scope.canvas = document.getElementById('canvas');
-        var context = canvas.getContext('2d');
+        var context = $scope.canvas.getContext('2d');
                
         /*
         var imageObj1 = new Image();
@@ -157,12 +150,16 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
         }
 
         imageObj1.onload = function() {
-            $scope.canvas.width = photo.width;
-            $scope.canvas.height = photo.height;
+            $scope.canvas.width = imageObj1.width;
+            $scope.canvas.height = imageObj1.height;
+            context.save();
+            context.translate(imageObj1.width, 0);
+            context.scale(-1, 1);
             context.drawImage(photo, 0, 0, imageObj1.width, imageObj1.height);
-            // context.translate(width, 0);
-            // context.scale(-1, 1);
+            context.restore();
         }
+
+        
 
         var imageObj2 = new Image();
         imageObj2.src = "images/001 Cuento - Mono photo0.png";
@@ -192,30 +189,14 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
 });
 
 app.run(function($rootScope) {
-    $rootScope.tales = [
+    $rootScope.photoList = [
         {
-            "id" : 1,
-            "title" : "Anoche cuando dormía",
-            "author" : "Antonio Machado",
-            "text" : "Anoche cuando dormía, soñé ¡bendita ilusión! que una colmena tenía dentro de mi corazón; y las doradas abejas iban dabricando en él, con las amarguras viejas, blanca cera y dulce miel.",
-            "footer" : "(fragmento)",
-            "image" : "tale1.png"
+            "id" : "001",
+            "image" : "images/001 Cuento - Mono photo0.png"
         },
         {
-            "id" : 2,
-            "title" : "La lechuza",
-            "author" : "Aramis Quintero",
-            "text" : " En la noche oscura va una mano blanca. Guante de la luna. Pañuelo o bufanda. Nadie lo adivina... Vuela silenciosa, y de pronto grazna.",
-            "footer" : "(fragmento)",
-            "image" : "tale2.png"
-        },
-        {
-            "id" : 3,
-            "title" : "El burro enfermo",
-            "author" : "Anónimo",
-            "text" : "A mi burro, a mi burro... ",
-            "footer" : "",
-            "image" : "tale3.png"
+            "id" : "002",
+            "image" : "002 Cuento - Pulpo photo web0.png"
         }
     ];
 })
