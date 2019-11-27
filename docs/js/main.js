@@ -18,6 +18,8 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
     
     $scope.id = $routeParams.id;
 
+    $scope.whatermark = $rootScope.getImagePath($scope.id);
+
     // The width and height of the captured photo. We will set the
     // width to the value defined here, but the height will be
     // calculated based on the aspect ratio of the input stream.
@@ -159,10 +161,8 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
             context.restore();
         }
 
-        
-
         var imageObj2 = new Image();
-        imageObj2.src = "images/001 Cuento - Mono photo0.png";
+        imageObj2.src = $rootScope.getImagePath($scope.id);
         imageObj2.onload = function() {
             context.drawImage(imageObj2, 0, 0, imageObj1.width, imageObj1.height);      
         }
@@ -176,9 +176,13 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
 
     $scope.download = function() {
         console.log("[sharephotoCtrl] download");
+
+        var today = new Date();
+        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+
         var downloadLink = document.createElement("a");
         downloadLink.href = $scope.canvas.toDataURL();
-        downloadLink.download = "foto.png";
+        downloadLink.download = "foto-" + date + ".png";
         downloadLink.click();
     }
 
@@ -192,11 +196,16 @@ app.run(function($rootScope) {
     $rootScope.photoList = [
         {
             "id" : "001",
-            "image" : "images/001 Cuento - Mono photo0.png"
+            "path" : "images/001 Cuento - Mono photo0.png"
         },
         {
             "id" : "002",
-            "image" : "002 Cuento - Pulpo photo web0.png"
+            "path" : "images/002 Cuento - Pulpo photo web0.png"
         }
     ];
+
+    $rootScope.getImagePath = function(id) {
+        var photo = $rootScope.photoList.find(element => element.id.localeCompare(id) == 0);
+        return photo.path;
+    }
 })
