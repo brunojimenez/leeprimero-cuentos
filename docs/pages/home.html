@@ -19,8 +19,10 @@
                 <div class="camera">
                     <video id="video">Video stream not available.</video> 
                 </div>
-                <img id="photo" ng-src="{{photo}}" />
+                <img id="watermark" ng-src="{{watermark}}" />
                 <canvas id="canvas" style="display: none;"></canvas>
+
+                <canvas id="mycanvas"></canvas>
             </div>
         </div>
     </div>
@@ -31,27 +33,17 @@
         margin: 0;
         padding: 0;
     }
-    #photo {
+    #watermark {
         margin: 0;
         padding: 0;
         transform: translate(0%, -102%);
         visibility: hidden;
     }
-    /*
-    #photo {
-        width: 320px;
-        height: auto ;
-        position: relative; 
-        transform: translate(-5%, -81%) scale(0.95);
-        transform: translateX(-10%);
-        
-    }
-    */
     video {
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
     }
     canvas {
-        display:none;
+        display: none;
     }
 </style>

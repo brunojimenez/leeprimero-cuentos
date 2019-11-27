@@ -18,7 +18,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
     
     $scope.id = $routeParams.id;
 
-    $scope.photo = $rootScope.getImagePath($scope.id);
+    $scope.watermark = $rootScope.getImagePath($scope.id);
 
     // The width and height of the captured photo. We will set the
     // width to the value defined here, but the height will be
@@ -85,11 +85,10 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
             console.log("[homeCtrl] Desktop");
             width = 720;
         }
-
         
         video = document.getElementById('video');
         canvas = document.getElementById('canvas');
-        photo = document.getElementById('photo');
+        watermark = document.getElementById('watermark');
 
         navigator.mediaDevices.getUserMedia({
                 video: true, // { facingMode: { exact: "user" } },
@@ -119,11 +118,11 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
                 video.setAttribute('width', width);
                 video.setAttribute('height', height);
 
-                //photo.style.width = width;
-                //photo.style.height = height;
-                photo.setAttribute('width', width);
-                photo.setAttribute('height', height);
-                photo.style.visibility = 'visible';
+                //watermark.style.width = width;
+                //watermark.style.height = height;
+                watermark.setAttribute('width', width);
+                watermark.setAttribute('height', height);
+                watermark.style.visibility = 'visible';
 
                 video.style.width = document.width + 'px';
                 video.style.height = document.height + 'px';
@@ -153,48 +152,59 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
     console.log("[sharephotoCtrl] start");
 
     $scope.id = $routeParams.id;
+    $scope.canvas = null;
 
-    $scope.canvas = null; 
+    $scope.loadImages = function(sources, callback) {
+        var images = {};
+        var loadedImages = 0;
+        var numImages = 0;
+        // get num of sources
+        for(var src in sources) {
+            numImages++;
+        }
+        for(var src in sources) {
+            images[src] = new Image();
+            images[src].onload = function() {
+                if(++loadedImages >= numImages) {
+                    callback(images);
+                }
+            }
+            images[src].src = sources[src];
+        }
+    }
 
     $scope.init = function() {
-        console.log("[sharephotoCtrl][init]");
-
-        $scope.canvas = document.getElementById('canvas');
-        var context = $scope.canvas.getContext('2d');
-               
-        /*
-        var imageObj1 = new Image();
-        imageObj1.src = $rootScope.photo;
-        */
-
-        // draw image
-        var imageObj1 = document.getElementById('photo');
-        if ($rootScope.photo) {
-            imageObj1.setAttribute('src', $rootScope.photo);
-        } else {
-            imageObj1.setAttribute('src', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII');
-        }
         
-        var imageObj2 = new Image();
-        imageObj2.src = $rootScope.getImagePath($scope.id);
-        imageObj2.onload = function() {
-            console.log("[sharephotoCtrl][init] imageObj2.onload");
-            context.save();
-            context.drawImage(imageObj2, 0, 0, imageObj1.width, imageObj1.height);
-            context.restore();
-        }
-       
-        imageObj1.onload = function() {
-            console.log("[sharephotoCtrl][init] imageObj1.onload");
-            $scope.canvas.width = imageObj1.width;
-            $scope.canvas.height = imageObj1.height;
-            context.save();
-            context.translate(imageObj1.width, 0);
-            context.scale(-1, 1);
-            context.drawImage(photo, 0, 0, imageObj1.width, imageObj1.height);
-            context.restore();
+        $scope.canvas = document.getElementById('canvas');
+
+        if ($rootScope.mobileCheck()) {
+            $scope.canvas.width = 320;
+            $scope.canvas.height = 426;
+        } else {
+            console.log("[homeCtrl] Desktop");
+            $scope.canvas.width = 720;
+            $scope.canvas.height = 540;
         }
 
+        var context = canvas.getContext('2d');
+
+        var sources = {
+            uno: $rootScope.photo,
+            dos: $rootScope.getImagePath($scope.id)
+        };
+
+        $scope.loadImages(sources, function(images) {
+            // add and rotate firt image
+            context.save();
+            context.translate($scope.canvas.width, 0);
+            context.scale(-1, 1);
+            context.drawImage(images.uno, 0, 0, $scope.canvas.width, $scope.canvas.height);
+            context.restore();
+
+            // add second image
+            context.drawImage(images.dos, 0, 0, $scope.canvas.width, $scope.canvas.height);
+        });
+    
     }
     $scope.init();
 
@@ -230,8 +240,48 @@ app.run(function($rootScope) {
         },
         {
             "id" : "002",
-            "mobile" : "images/002 Cuento - Pulpo photo web0.png",
-            "desktop" : "images/002 Cuento - Pulpo photo web0.png"
+            "mobile" : "images/002 Cuento - Pulpo photo web 20.png",
+            "desktop" : "images/002 Cuento - Pulpo photo web 20.png"
+        },
+        {
+            "id" : "003",
+            "mobile" : "images/003 Cuento - cabra photo 20.png",
+            "desktop" : "images/003 Cuento - cabra photo 20.png"
+        },
+        {
+            "id" : "004",
+            "mobile" : "images/004 Cuento - lagarto photo 20.png",
+            "desktop" : "images/004 Cuento - lagarto photo 20.png"
+        },
+        {
+            "id" : "005",
+            "mobile" : "images/005 Cuento - gato photo 20.png",
+            "desktop" : "images/005 Cuento - gato photo 20.png",
+        },
+        {
+            "id" : "006",
+            "mobile" : "images/006 Cuento - Aranna photo 20.png",
+            "desktop" : "images/006 Cuento - Aranna photo 20.png"
+        },
+        {
+            "id" : "007",
+            "mobile" : "images/007 Cuento - Mariposa photo 20.png",
+            "desktop" : "images/007 Cuento - Mariposa photo 20.png"
+        },
+        {
+            "id" : "008",
+            "mobile" : "images/008 Cuento - Natacha photo 20.png",
+            "desktop" : "images/008 Cuento - Natacha photo 20.png"
+        },
+        {
+            "id" : "009",
+            "mobile" : "images/009 Cuento - cuando dormia- abejas photo 20.png",
+            "desktop" : "images/009 Cuento - cuando dormia- abejas photo 20.png"
+        },
+        {
+            "id" : "010",
+            "mobile" : "images/010 Cuento - Supermercado photo 20.png",
+            "desktop" : "images/010 Cuento - Supermercado photo 20.png"
         }
     ];
 
@@ -250,3 +300,5 @@ app.run(function($rootScope) {
         return check;
       };
 })
+
+
