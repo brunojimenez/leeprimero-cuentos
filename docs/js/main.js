@@ -81,7 +81,9 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
         canvas = document.getElementById('canvas');
 
         navigator.mediaDevices.getUserMedia({
-                video: true,
+                video: {
+                    facingMode: 'user'
+                },
                 audio: false
             })
             .then(function(stream) {
