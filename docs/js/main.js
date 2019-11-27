@@ -6,14 +6,6 @@ app.config(function($routeProvider) {
             templateUrl : "pages/home.html", 
             controller: "homeCtrl"
         })
-        .when("/tale/:id", {
-            templateUrl : "pages/tale.html",
-            controller: "taleCtrl"
-        })
-        .when("/photo/:id", {
-            templateUrl : "pages/photo.html",
-            controller: "photoCtrl"
-        })
         .when("/sharephoto", {
             templateUrl : "pages/sharephoto.html",
             controller: "sharephotoCtrl"
@@ -21,61 +13,10 @@ app.config(function($routeProvider) {
 
 });
 
-app.controller('homeCtrl', function($scope, $rootScope){
-    console.log("homeCtrl");
-
-    $scope.tales = $rootScope.tales;
-
-    $scope.init = function() {
-        
-    }
-    $scope.init();
-
-    $scope.$on("$destroy", function() {
-        console.log("Destroy homeCtrl");
-    });
-
-});
-
-app.controller('taleCtrl', function($scope, $rootScope, $routeParams, $location){
-    console.log("taleCtrl");
-
-    $scope.id = $routeParams.id;
-    $scope.tales = $rootScope.tales;
-
-    $scope.goto = function(to) {
-        console.log("goto: " +  to);
-        $location.path(to);
-    }
-    
-    $scope.init = function() {
-        for (const i in $scope.tales) {
-            console.log(`i: ${i}; tale.id : ${$scope.tales[i].id}`);
-            if ($scope.tales[i].id == $scope.id) {
-                $scope.tale = $scope.tales[i];
-                break;
-            }
-        }
-        // $scope.tale = $scope.tales[$scope.id];
-    }
-    $scope.init();
-
-    $scope.$on("$destroy", function() {
-        console.log("Destroy taleCtrl");
-    });
-});
-
-app.controller('photoCtrl', function($scope, $routeParams, $location, $interval){
-    console.log("photoCtrl");
+app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval, $location){
+    console.log("[homeCtrl] start");
     
     $scope.id = $routeParams.id;
-
-    $scope.goto = function(to) {
-        console.log("goto: " +  to);
-        $location.path(to);
-    }
-
-    $scope.photodata = "";
 
     // The width and height of the captured photo. We will set the
     // width to the value defined here, but the height will be
@@ -88,23 +29,10 @@ app.controller('photoCtrl', function($scope, $routeParams, $location, $interval)
     var streaming = false;
     var video = null;
     var canvas = null;
-    var photo = null;
 
-    // Fill the photo with an indication that none has been
-    // captured.
-    $scope.clearphoto = function() {
-        console.log("clearphoto");
-
-        var context = canvas.getContext('2d');
-        context.fillStyle = "#AAA";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Fill photo
-        var data = canvas.toDataURL('image/png');
-        console.log("clearphoto data: ", data);
-    
-        photo.setAttribute('src', data);
-        $scope.photodata = "";
+    $scope.goto = function(to) {
+        console.log("[homeCtrl] goto: " +  to);
+        $location.path(to);
     }
     
     // Capture a photo by fetching the current contents of the video
@@ -112,38 +40,37 @@ app.controller('photoCtrl', function($scope, $routeParams, $location, $interval)
     // format data URL. By drawing it on an offscreen canvas and then
     // drawing that to the screen, we can change its size and/or apply
     // other changes before drawing it.
-    $scope.takepicture = function() {
-        console.log("takepicture");
+    $scope.takepicture = async function() {
+        console.log("[homeCtrl] takepicture");
+        var context = canvas.getContext('2d');
 
-        $scope.countDown = 3;
-        $scope.interval = $interval(function(){
-            console.log("countDown : ", $scope.countDown--)
+        // Flip horizontal
+        
+
+        if (width && height) {
+            canvas.width = width;
+            canvas.height = height;
+
+            $rootScope.width = width;
+            $rootScope.height = height;
+
+            console.log("[homeCtrl] drawImage1");
+            await context.drawImage(video, 0, 0, width, height);
+            $rootScope.photo = await canvas.toDataURL();       
+        }
+    }
+
+    $scope.doCountDown = function() {
+        console.log("[homeCtrl] countDown!");
+        $scope.countDown = 2 ; // Seconds to coundown
+        $scope.interval = $interval(async function(){
+            console.log("[homeCtrl] countDown: ", $scope.countDown--);
             if ($scope.countDown == 0) {
-                console.log("Stop!");
-
-                var context = canvas.getContext('2d');
-                if (width && height) {
-                    canvas.width = width;
-                    canvas.height = height;
-                    context.drawImage(video, 0, 0, width, height);
-
-                    var imageObj2 = new Image();
-                    imageObj2.src = "images/gato.png";
-                    imageObj2.onload = function() {
-                        context.drawImage(imageObj2, 0, 0, 300, 300);
-
-                        // common
-                        var data = canvas.toDataURL('image/png');
-
-                        console.log("takepicture data: ", data);
-                        photo.setAttribute('src', data);
-                        $scope.photodata = data;
-                    }
-                } else {
-                    $scope.clearphoto();
-                }
-
-                $interval.cancel($scope.interval);
+                console.log("[homeCtrl] countDown stop!");
+                await $scope.takepicture();
+                await $interval.cancel($scope.interval);
+                await $location.path('/sharephoto');
+                await $scope.$apply();
             }
         },1000,0);
     }
@@ -153,10 +80,9 @@ app.controller('photoCtrl', function($scope, $routeParams, $location, $interval)
         
         video = document.getElementById('video');
         canvas = document.getElementById('canvas');
-        photo = document.getElementById('photo');
-        
+
         navigator.mediaDevices.getUserMedia({
-                video: true,
+                video: true , // { width: { min: 320 }, }  // { width: 1280, height: 720 }
                 audio: false
             })
             .then(function(stream) {
@@ -164,61 +90,106 @@ app.controller('photoCtrl', function($scope, $routeParams, $location, $interval)
                 video.play();
             })
             .catch(function(err) {
-                console.log("An error occurred: " + err);
+                console.log("[homeCtrl] An error occurred: " + err);
             });
         
         video.addEventListener('canplay', function(ev) {
             if (!streaming) {
+                console.log("[homeCtrl][addEventListener canplay] !streaming");
+
+                console.log("[homeCtrl][addEventListener canplay] video.videoWidth : ", video.videoWidth);
+                console.log("[homeCtrl][addEventListener canplay] video.videoHeight : ", video.videoHeight);
+
                 height = video.videoHeight / (video.videoWidth / width);
+
+                console.log("[homeCtrl][addEventListener canplay] height : ", height);
+
                 // Firefox currently has a bug where the height can't be read from
                 // the video, so we will make assumptions if this happens.
                 if (isNaN(height)) {
                     height = width / (4 / 3);
                 }
+
+                console.log("[homeCtrl][addEventListener canplay] height : ", height);
+
                 video.setAttribute('width', width);
                 video.setAttribute('height', height);
-                canvas.setAttribute('width', width);
-                canvas.setAttribute('height', height);
+
                 streaming = true;
             }
         }, false);
-
-        // $scope.clearphoto();
     };
     $scope.init();
 
     $scope.$on("$destroy", function() {
-        console.log("Destroy photoCtrl");
+        console.log("[homeCtrl] destroy");
         try {
             video.srcObject.getTracks().forEach(function(track) {
                 track.stop();
             });
         } catch (ex) {
-            console.log(ex);
+            console.log("[homeCtrl] destroy", ex);
         }
     });
-
-
-    $scope.download = function() {
-        const downloadLink = document.createElement("a");
-        const fileName = "foto.png";
-
-        downloadLink.href = $scope.photodata;
-        downloadLink.download = fileName;
-        downloadLink.click();
-    }
-    
 });
 
-app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams){
-    console.log("sharephotoCtrl");
+app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $location){
+    console.log("[sharephotoCtrl] start");
+
+    $scope.canvas = null; 
 
     $scope.init = function() {
+        console.log("[sharephotoCtrl] init");
+        $scope.canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+               
+        /*
+        var imageObj1 = new Image();
+        imageObj1.src = $rootScope.photo;
+        */
 
+        // draw image
+        var imageObj1 = document.getElementById('photo');
+        if ($rootScope.photo) {
+            imageObj1.setAttribute('src', $rootScope.photo);
+        } else {
+            imageObj1.setAttribute('src', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII');
+        }
+
+        imageObj1.onload = function() {
+            $scope.canvas.width = photo.width;
+            $scope.canvas.height = photo.height;
+            context.drawImage(photo, 0, 0, imageObj1.width, imageObj1.height);
+            // context.translate(width, 0);
+            // context.scale(-1, 1);
+        }
+
+        var imageObj2 = new Image();
+        imageObj2.src = "images/001 Cuento - Mono photo0.png";
+        imageObj2.onload = function() {
+            context.drawImage(imageObj2, 0, 0, imageObj1.width, imageObj1.height);      
+        }
     }
     $scope.init();
-});
 
+    $scope.goto = function(to) {
+        console.log("[sharephotoCtrl] goto: " +  to);
+        $location.path(to);
+    }
+
+    $scope.download = function() {
+        console.log("[sharephotoCtrl] download");
+        var downloadLink = document.createElement("a");
+        downloadLink.href = $scope.canvas.toDataURL();
+        downloadLink.download = "foto.png";
+        downloadLink.click();
+    }
+
+    $scope.$on("$destroy", function() {
+        console.log("[sharephotoCtrl] destroy");
+        $rootScope.photo = null;
+    });
+});
 
 app.run(function($rootScope) {
     $rootScope.tales = [
@@ -245,95 +216,6 @@ app.run(function($rootScope) {
             "text" : "A mi burro, a mi burro... ",
             "footer" : "",
             "image" : "tale3.png"
-        },
-        {
-            "id" : 4,
-            "title" : "La cabra",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale4.png"
-        },
-        {
-            "id" : 5,
-            "title" : "La manzanita",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale5.png"
-        },
-        {
-            "id" : 6,
-            "title" : "El leon Miguel",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale6.png"
-        },
-        {
-            "id" : 7,
-            "title" : "Me asusta la noche",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale7.png"
-        },
-        {
-            "id" : 8,
-            "title" : "Que pasa con Papá",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale8.png"
-        },
-        {
-            "id" : 9,
-            "title" : "Llegó la comida",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale9.png"
-        },
-        {
-            "id" : 10,
-            "title" : "Hay! me caí",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale10.png"
-        },
-        {
-            "id" : 11,
-            "title" : "Hay! me caí",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale11.png"
-        },
-        {
-            "id" : 12,
-            "title" : "Hay! me caí",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale12.png"
-        },
-        {
-            "id" : 13,
-            "title" : "Hay! me caí",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale13.png"
-        },
-        {
-            "id" : 14,
-            "title" : "Hay! me caí",
-            "author" : "Anónimo",
-            "text" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "footer" : "",
-            "image" : "tale14.png"
         }
-
     ];
 })

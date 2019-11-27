@@ -1,42 +1,35 @@
 <main id="sharephoto" role="main">
     <div class="container">
+
         <div class="row">
             <div class="col text-center">
-                <h1 class="tale_title">Compartela!</h1>
-
-                <p>
-                    <img src="https://via.placeholder.com/320x200" style="background-color: white; padding: 10px 10px 30px 10px; margin: 15px;"> 
-                </p>
-
+                <h1 class="tale_title">Descargala y comparte!</h1>
             </div>
         </div>
-
         <div class="row mt-5">
             <div class="col text-center">
-                <a class="btn btn-warning btn-circle btn-xl" href="#/!"><i class="fas fa-angle-left"></i></a>
-                <button type="button" class="btn btn-warning btn-circle btn-xl"><i class="fas fa-angle-left"></i></button>
-                <button type="button" class="btn btn-success btn-circle btn-xl" ng-click="takepicture()"><i class="fas fa-camera"></i></button>
+                <button class="btn btn-warning btn-circle btn-xl mx-3" ng-click="goto('/')"><i class="fas fa-angle-left"></i></a>
+                    <button class="btn btn-success btn-circle btn-xl mx-3" ng-click="download()" ng-show="photo"><i class="fas fa-download"></i></a>
             </div>
         </div>
-
-        <div class="row mt-5">
+        <div class="row mt-3">
+            <div class="col text-center" style="display: none;">
+                <div class="photo">
+                    <img id="photo"/>                    
+                </div>
+            </div>
+            <div class="col text-center">
+                <div class="canvas">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5" style="display: none;">
             <div class="col text-center">
                 <button type="button" class="btn btn-primary btn-circle btn-lg mx-3"><i class="fab fa-facebook-f"></i></button>
                 <button type="button" class="btn btn-primary btn-circle btn-lg mx-3"><i class="fab fa-twitter"></i></button>
                 <button type="button" class="btn btn-primary btn-circle btn-lg mx-3"><i class="fab fa-instagram"></i></button>
                 <button type="button" class="btn btn-primary btn-circle btn-lg mx-3"><i class="fas fa-envelope"></i></button>
-            </div>
-        </div>
-        
-        <div class="row mt-5">
-            <div class="col ">
-                <div class="camera">
-                    <form>
-                        <div class="form-group">
-                            <input type="email" class="form-control form-control-lg" placeholder="Ingrese su email">
-                        </div>
-                    </form>
-                </div>
             </div>
         </div>
     </div>

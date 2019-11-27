@@ -1,39 +1,50 @@
-<main id="home" role="main">
-    <div class="container-flow">
+<main id="photo" role="main">
+    <div class="container">
         <div class="row">
-            <div class="col text-center" style="background-color: #E2E13F;">
-                <img src="images/topbar.jpg" class="img-fluid" style="max-height: 102px;">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col" style="background-color: gray;">
-                <div class="embed-responsive embed-responsive-16by9" style="height: 400px;">
-                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/5u9xQBZCw50" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div class="col text-center">
+                <h1 class="tale_title">Tómate una foto</h1>
                 </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col text-center">
+                <button class="btn btn-warning btn-circle btn-xl mx-3" ng-click="goto('/')"><i class="fas fa-angle-left"></i></a>
+                <button class="btn btn-success btn-circle btn-xl mx-3" ng-click="doCountDown()"><i class="fas fa-camera"></i></a>
             </div>
         </div>
-        <div class="row">
-            <div class="col text-center" style="background-color: #69B476;">
-                <img src="images/elige_tu_cuento.png" class="img-fluid" style="max-height: 284px;">
+        <div class="row mt-3">
+            <div class="col text-center">
+                <div class="camera">
+                    <video id="video">Video stream not available.</video> 
+                </div>
+                <img id="whatermark" src="images/001 Cuento - Mono photo0.png" style="display: none;"/>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-4 col-md-2" ng-repeat="(i, tale) in tales">
-                <a href="#!tale/{{tale.id}}">
-                    <div class="card mt-4 mx-4" ng-show="tale">
-                        <img ng-src="images/{{tale.image}}" class="card-img-top" alt="...">
-                        <div class="card-body" >
-                            <p class="card-text text-center">{{tale.title}}</p>
-                        </div>
-                    </div>
-                </a>
+         <div class="row mt-5">
+            <div class="col text-center" ng-show="countDown" >
+                <h1>{{countDown}}</h1>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col mt-5">
-                &nbsp;
+            <div class="col">
+                <canvas id="canvas"></canvas>
             </div>
         </div>
     </div>
 </main>
+
+<style>
+    #whatermark {
+        width: 320px;
+        height: auto ;
+        position: relative;
+        /*transform: translate(-5%, -81%) scale(0.95); */
+        /*  transform: translateX(-10%);*/
+        margin: 0;
+        padding: 0;
+    }
+    video {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+    }
+    canvas {
+        /*display:none;*/
+    }
+</style>
