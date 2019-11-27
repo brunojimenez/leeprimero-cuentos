@@ -108,6 +108,10 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
 
                 video.setAttribute('width', width);
                 video.setAttribute('height', height);
+                
+                video.setAttribute('autoplay', '');
+                video.setAttribute('muted', '');
+                video.setAttribute('playsinline', '');
 
                 streaming = true;
             }
