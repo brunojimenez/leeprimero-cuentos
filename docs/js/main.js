@@ -54,9 +54,14 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
             $rootScope.width = width;
             $rootScope.height = height;
 
-            console.log("[homeCtrl] drawImage");
-            await context.drawImage(video, 0, 0, width, height);
-            $rootScope.photo = await canvas.toDataURL();       
+            try {
+                console.log("[homeCtrl] takepicture");
+                await context.drawImage(video, 0, 0, width, height);
+                $rootScope.photo = await canvas.toDataURL();       
+            } catch(ex) {
+                console.log("[homeCtrl] takepicture ex", ex);
+            }
+
         }
     }
 
@@ -90,6 +95,61 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
         canvas = document.getElementById('canvas');
         watermark = document.getElementById('watermark');
 
+        // Older browsers might not implement mediaDevices at all, so we set an empty object first
+        if (navigator.mediaDevices === undefined) {
+            navigator.mediaDevices = {};
+        }
+
+        // Some browsers partially implement mediaDevices. We can't just assign an object
+        // with getUserMedia as it would overwrite existing properties.
+        // Here, we will just add the getUserMedia property if it's missing.
+        if (navigator.mediaDevices.getUserMedia === undefined) {
+
+            navigator.mediaDevices.getUserMedia = function(constraints) {
+
+                // First get ahold of the legacy getUserMedia, if present
+                var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+                // Some browsers just don't implement it - return a rejected promise with an error
+                // to keep a consistent interface
+                if (!getUserMedia) {
+                  return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                }
+
+                // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+                return new Promise(function(resolve, reject) {
+                  getUserMedia.call(navigator, constraints, resolve, reject);
+                });
+            }
+        }
+
+        navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+            })
+            .then(function(stream) {
+                console.log("[homeCtrl][init] getUserMedia then");
+
+                // Older browsers may not have srcObject
+                if ("srcObject" in video) {
+                    video.srcObject = stream;
+                } else {
+                    // Avoid using this in new browsers, as it is going away.
+                    video.src = window.URL.createObjectURL(stream);
+                }
+
+                video.onloadedmetadata = function(e) {
+                    video.play();
+                    video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                };
+                // requestAnimationFrame(tick);
+                //localStream = stream;
+            })
+            .catch(function(err) {
+                console.log(err.name + ": " + err.message);
+            });
+        
+        /*
         navigator.mediaDevices.getUserMedia({
                 video: true, // { facingMode: { exact: "user" } },
                 audio: false
@@ -102,6 +162,7 @@ app.controller('homeCtrl', function($scope, $rootScope, $routeParams, $interval,
             .catch(function(err) {
                 console.log("[homeCtrl] An error occurred: " + err);
             });
+        */
         
         video.addEventListener('canplay', function(ev) {
             if (!streaming) {
@@ -232,56 +293,57 @@ app.controller('sharephotoCtrl', function($scope, $rootScope, $routeParams, $loc
 });
 
 app.run(function($rootScope) {
+
     $rootScope.photoList = [
         {
             "id" : "001",
-            "mobile" : "images/001 Cuento - Mono photo web 20.png",
-            "desktop" : "images/001 Cuento - Mono photo web 30.png"
+            "mobile" : "images/001 Cuento - Mono photo 20.png",
+            "desktop" : "images/001 Cuento - Mono photo 30.png"
         },
         {
             "id" : "002",
-            "mobile" : "images/002 Cuento - Pulpo photo web 20.png",
-            "desktop" : "images/002 Cuento - Pulpo photo web 20.png"
+            "mobile" : "images/002 Cuento - Pulpo photo 20.png",
+            "desktop" : "images/002 Cuento - Pulpo photo 30.png"
         },
         {
             "id" : "003",
             "mobile" : "images/003 Cuento - cabra photo 20.png",
-            "desktop" : "images/003 Cuento - cabra photo 20.png"
+            "desktop" : "images/003 Cuento - cabra photo 30.png"
         },
         {
             "id" : "004",
             "mobile" : "images/004 Cuento - lagarto photo 20.png",
-            "desktop" : "images/004 Cuento - lagarto photo 20.png"
+            "desktop" : "images/004 Cuento - lagarto photo 30.png"
         },
         {
             "id" : "005",
             "mobile" : "images/005 Cuento - gato photo 20.png",
-            "desktop" : "images/005 Cuento - gato photo 20.png",
+            "desktop" : "images/005 Cuento - gato photo 30.png",
         },
         {
             "id" : "006",
             "mobile" : "images/006 Cuento - Aranna photo 20.png",
-            "desktop" : "images/006 Cuento - Aranna photo 20.png"
+            "desktop" : "images/006 Cuento - Aranna photo 30.png"
         },
         {
             "id" : "007",
             "mobile" : "images/007 Cuento - Mariposa photo 20.png",
-            "desktop" : "images/007 Cuento - Mariposa photo 20.png"
+            "desktop" : "images/007 Cuento - Mariposa photo 30.png"
         },
         {
             "id" : "008",
             "mobile" : "images/008 Cuento - Natacha photo 20.png",
-            "desktop" : "images/008 Cuento - Natacha photo 20.png"
+            "desktop" : "images/008 Cuento - Natacha photo 30.png"
         },
         {
             "id" : "009",
             "mobile" : "images/009 Cuento - cuando dormia- abejas photo 20.png",
-            "desktop" : "images/009 Cuento - cuando dormia- abejas photo 20.png"
+            "desktop" : "images/009 Cuento - cuando dormia- abejas photo 30.png"
         },
         {
             "id" : "010",
             "mobile" : "images/010 Cuento - Supermercado photo 20.png",
-            "desktop" : "images/010 Cuento - Supermercado photo 20.png"
+            "desktop" : "images/010 Cuento - Supermercado photo 30.png"
         }
     ];
 
